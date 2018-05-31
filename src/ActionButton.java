@@ -1,4 +1,7 @@
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 
 class ActionButton {
@@ -17,21 +20,23 @@ class ActionButton {
     private int sy;
 
     private String text;
-    private Color enabledColor = new Color(0, 145, 17);
     private Color disabledColor = Color.DARK_GRAY;
     private Color enabledAccentColor = enabledColor.darker();
     private Color disabledAccentColor = disabledColor.darker();
+    private Color hoverColor = enabledColor.brighter();
     private Color textColor = Color.WHITE;
+    private Color currentColor = new Color(0, 170, 17);
 
+    static Color enabledColor = new Color(0, 145, 17);
     static Font font = new Font("Arial", Font.PLAIN, 18);
 
-    ActionButton(String text, boolean defaultEnabled, FontMetrics fm) {
-        this(text, defaultEnabled, fm, 0);
+    ActionButton(String text, boolean isEnabledByDefault, FontMetrics fm) {
+        this(text, isEnabledByDefault, fm, 0);
     }
 
-    ActionButton(String text, boolean defaultEnabled, FontMetrics fm, int offset) {
+    ActionButton(String text, boolean isEnabledByDefault, FontMetrics fm, int offset) {
         this.text = text;
-        isEnabled = defaultEnabled;
+        isEnabled = isEnabledByDefault;
 
         // auto-calc coordinates based on order of declaration
         x = 896;
@@ -65,17 +70,24 @@ class ActionButton {
         graphics.fillRect(x, y + height, width, 3);
         // background
         if (isEnabled) {
-            graphics.setColor(enabledColor);
+            graphics.setColor(currentColor);
         } else {
             graphics.setColor(disabledColor);
         }
         graphics.fillRect(x, y, width, height);
 
-
         // text
         graphics.setFont(font);
         graphics.setColor(textColor);
         graphics.drawString(text, sx, sy);
+    }
+
+    void tick() {
+        if (isClickInBounds(Mouse.x, Mouse.y)) {
+            currentColor = hoverColor;
+        } else {
+            currentColor = enabledColor;
+        }
     }
 
     private boolean isClickInBounds(int cx, int cy) {

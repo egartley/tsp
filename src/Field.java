@@ -1,13 +1,15 @@
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.util.ArrayList;
 
 class Field {
 
-    static final int MAX_POINTS = 600;
+    static final int MAX_POINTS = 5000;
+    static int randomizeAmount = MAX_POINTS;
     static short fieldWidth = 850;
-
-    private static boolean isCalculated;
-    private static boolean showPoints = true;
+    static boolean showPoints = true;
+    static boolean isCalculated;
+    static boolean isCalculating;
 
     static ArrayList<Point> points = new ArrayList<>();
     static ArrayList<Segment> segments = new ArrayList<>();
@@ -24,7 +26,7 @@ class Field {
                     exists = p.x == x && p.y == y;
                 // if there isn't already a point at the clicked x/y, then add it
                 if (!exists)
-                    points.add(new Point(x, y, points.size() + 1));
+                    points.add(new Point(x, y));
 
                 // update base/end booleans
                 if (points.size() == 1) {
@@ -46,8 +48,9 @@ class Field {
         }
     }
 
-    static void calculate() {
+    static synchronized void calculate() {
         Point current = null;
+        isCalculating = true;
 
         if (segments.size() > 0)
             segments.clear();
@@ -100,6 +103,7 @@ class Field {
             }
 
             isCalculated = true;
+            isCalculating = false;
 
             UI.setButtonIsEnabled(UI.CALCULATE_BUTTON, false);
         }
@@ -118,8 +122,8 @@ class Field {
         points.clear();
         segments.clear();
 
-        for (int i = 0; i < MAX_POINTS; i++) {
-            points.add(new Point(Util.randomInt(fieldWidth - 8, 16), Util.randomInt(Main.WINDOW_HEIGHT - 28, 16), i));
+        for (int i = 0; i < randomizeAmount; i++) {
+            points.add(new Point(Util.randomInt(fieldWidth - 8, 16), Util.randomInt(Main.WINDOW_HEIGHT - 28, 16)));
 
             if (points.size() == 1) {
                 points.get(0).isBasePoint = true;

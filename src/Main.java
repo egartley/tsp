@@ -5,8 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferStrategy;
 
-import javax.swing.JFrame;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 
 /**
  * Modified version of https://github.com/egartley/beyond-origins/blob/indev/src/net/egartley/beyondorigins/Game.java
@@ -43,13 +42,20 @@ class Main extends Canvas implements Runnable {
 
     private void init() {
         currentGameState = new InGameState();
-        frame = new JFrame("Traveling Salesman");
+        frame = new JFrame("Travelling Salesman");
         frame.setSize(windowDimension.width, windowDimension.height);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setResizable(false);
         this.addMouseListener(new Mouse());
+        this.addMouseMotionListener(new Mouse());
         frame.add(self);
         frame.setLocationRelativeTo(null);
+        frame.setIconImage(new ImageIcon("src//icon.png").getImage());
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            System.out.println("Could not set the look and feel!");
+        }
         frame.setVisible(true);
     }
 

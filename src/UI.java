@@ -15,8 +15,13 @@ class UI {
 
     private static int fieldTextImageX;
     private static int fieldTextImageY;
+    private static short lineIndex = 0;
+    private static boolean setFontMetrics = false;
 
     private static BufferedImage fieldTextImage;
+    private static Font statusFont = new Font("Consolas", Font.BOLD, 14);
+    private static Color positiveColor = new Color(0, 208, 21);
+    private static FontMetrics fm;
 
     static ArrayList<ActionButton> buttons = new ArrayList<>();
 
@@ -24,7 +29,7 @@ class UI {
         buttons.add(new ActionButton("Options", true, fm) {
             @Override
             void onClick() {
-
+                Options.show();
             }
         });
         buttons.add(new ActionButton("Help", true, fm) {
@@ -48,7 +53,8 @@ class UI {
         buttons.add(new ActionButton("Calculate", false, fm) {
             @Override
             void onClick() {
-                Field.calculate();
+                Thread worker = new Thread(new FieldWorker());
+                worker.start();
             }
         });
         buttons.add(new ActionButton("Hide/Show Points", true, fm) {
@@ -68,15 +74,60 @@ class UI {
         fieldTextImageY = Main.WINDOW_HEIGHT / 2 - fieldTextImage.getHeight() / 2;
     }
 
-    static void setButtonIsEnabled(byte button, boolean enabled) {
-        if (button != -1 && button < buttons.size())
-            buttons.get(button).isEnabled = enabled;
+    static void setButtonIsEnabled(byte buttonID, boolean enabled) {
+        if (buttonID != -1 && buttonID < buttons.size())
+            buttons.get(buttonID).isEnabled = enabled;
     }
 
-    static boolean getButtonIsEnabled(byte button) {
-        if (button != -1 && button < buttons.size())
-            return buttons.get(button).isEnabled;
-        return false;
+    private static void drawStatusLine(Graphics graphics, String[] parts, Color[] colors) {
+        if (parts.length != colors.length || parts.length == 0)
+            return;
+
+        short i = 0;
+        int x = 896;
+        int y = 80 + (int) (statusFont.getSize() * 1.375 * lineIndex);
+        for (String text : parts) {
+            graphics.setColor(colors[i]);
+            graphics.drawString(text, x, y);
+            x += fm.stringWidth(text);
+            i++;
+        }
+
+        lineIndex++;
+    }
+
+    private static void drawStatusText(Graphics graphics) {
+        graphics.setFont(statusFont);
+        if (!setFontMetrics) {
+            fm = graphics.getFontMetrics(statusFont);
+            setFontMetrics = true;
+        }
+
+        // showing points
+        if (Field.showPoints)
+            drawStatusLine(graphics, new String[]{"Showing Points: ", "TRUE"}, new Color[]{Color.BLACK, positiveColor});
+        else
+            drawStatusLine(graphics, new String[]{"Showing Points: ", "FALSE"}, new Color[]{Color.BLACK, Color.RED});
+        // number of points
+        drawStatusLine(graphics, new String[]{"Number of Points: ", String.valueOf(Field.points.size())}, new Color[]{Color.BLACK, Color.BLACK});
+
+        // calculation status
+        lineIndex++;
+        if (Field.isCalculating) {
+            double percent = ((1.0 * Field.segments.size()) / (1.0 * Field.points.size()));
+            drawStatusLine(graphics, new String[]{Field.segments.size() + " of " + Field.points.size()}, new Color[]{Color.BLACK});
+            drawStatusLine(graphics, new String[]{String.format("%.2f", percent * 100.0) + "% complete"}, new Color[]{Color.BLACK});
+
+            // progress bar
+            graphics.setColor(Color.BLACK);
+            graphics.drawRect(895, 169, 141, 13);
+            graphics.setColor(ActionButton.enabledColor);
+            graphics.fillRect(896, 170, (int) (140 * percent), 12);
+        } else {
+            drawStatusLine(graphics, new String[]{"Ready to calculate"}, new Color[]{Color.BLACK});
+        }
+
+        lineIndex = 0;
     }
 
     static void render(Graphics graphics) {
@@ -85,6 +136,13 @@ class UI {
 
         for (ActionButton ab : buttons)
             ab.render(graphics);
+
+        drawStatusText(graphics);
+    }
+
+    static void tick() {
+        for (ActionButton ab : buttons)
+            ab.tick();
     }
 
 }

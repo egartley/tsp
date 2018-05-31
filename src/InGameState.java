@@ -23,7 +23,7 @@ class InGameState extends GameState {
 
     @Override
     public void tick() {
-
+        UI.tick();
     }
 
 }
