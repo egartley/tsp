@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 
 class UI {
 
@@ -53,8 +54,8 @@ class UI {
         buttons.add(new ActionButton("Calculate", false, fm) {
             @Override
             void onClick() {
-                Thread worker = new Thread(new FieldWorker());
-                worker.start();
+                if (!Field.isCalculating)
+                    new Thread(new FieldWorker()).start();
             }
         });
         buttons.add(new ActionButton("Hide/Show Points", true, fm) {
@@ -77,6 +78,12 @@ class UI {
     static void setButtonIsEnabled(byte buttonID, boolean enabled) {
         if (buttonID != -1 && buttonID < buttons.size())
             buttons.get(buttonID).isEnabled = enabled;
+    }
+
+    static boolean getButtonIsEnabled(byte buttonID) {
+        if (buttonID != -1 && buttonID < buttons.size())
+            return buttons.get(buttonID).isEnabled;
+        return false;
     }
 
     private static void drawStatusLine(Graphics graphics, String[] parts, Color[] colors) {
@@ -103,7 +110,7 @@ class UI {
             setFontMetrics = true;
         }
 
-        // showing points
+        // Field.showPoints
         if (Field.showPoints)
             drawStatusLine(graphics, new String[]{"Showing Points: ", "TRUE"}, new Color[]{Color.BLACK, positiveColor});
         else
@@ -141,8 +148,12 @@ class UI {
     }
 
     static void tick() {
-        for (ActionButton ab : buttons)
-            ab.tick();
+        try {
+            for (ActionButton ab : buttons)
+                ab.tick();
+        } catch (ConcurrentModificationException e) {
+            e.printStackTrace();
+        }
     }
 
 }

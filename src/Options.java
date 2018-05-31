@@ -57,36 +57,33 @@ class Options {
         frame.setAlwaysOnTop(true);
 
         // build controllers
-        OptionController randomizeAmountController = new OptionController("Points while randomizing", new String[]{"Maximum", "3", "12", "18", "24", "32", "48", "52", "64", "72", "128", "200", "300", "500", "750", "1000", "2000"}, 0, 0) {
+        OptionController randomizeAmountController = new OptionController("Points while randomizing",
+                new String[]{"Maximum", "3", "12", "18", "24", "32", "48", "52", "64", "72", "128", "200", "300", "500"}, 0, 0) {
             @Override
             void onComboBoxUpdate(String selected) {
                 if (selected.equals("Maximum")) {
-                    Field.randomizeAmount = Field.MAX_POINTS;
+                    Field.randomizeAmount = Field.maximumPoints;
                 } else {
                     Field.randomizeAmount = Integer.valueOf(selected);
                 }
             }
         };
         randomizeAmountController.addComponentsToFrame(frame);
-        if (Field.randomizeAmount == Field.MAX_POINTS)
+        if (Field.randomizeAmount == Field.maximumPoints)
             randomizeAmountController.synchronizeComboBoxSelection("Maximum");
         else
             randomizeAmountController.synchronizeComboBoxSelection(String.valueOf(Field.randomizeAmount));
 
-        OptionController testController2 = new OptionController("Description label 2", "Check me", OptionController.CHECKBOX, 1, 0) {
+        OptionController testController2 = new OptionController("Maximum number of points (" + Field.maximumPoints + ")",
+                0, Field.MAX_POINTS, Field.maximumPoints, 1, 0, 250) {
             @Override
-            void onUpdate() {
-                System.out.println(checkBox.isSelected());
+            void onSliderUpdate(int value) {
+                Field.maximumPoints = value;
+                Field.randomizeAmount = value;
+                descriptionLabel.setText("Maximum number of points (" + Field.maximumPoints + ")");
             }
         };
         testController2.addComponentsToFrame(frame);
-
-        OptionController testController3 = new OptionController("Description label", "Click me", OptionController.BUTTON, 0, 1) {
-            @Override
-            void onUpdate() {
-            }
-        };
-        testController3.addComponentsToFrame(frame);
 
         frame.setVisible(true);
     }

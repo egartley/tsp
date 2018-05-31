@@ -12,8 +12,7 @@ class OptionController {
 
     private byte componentID;
 
-    private JLabel descriptionLabel;
-
+    JLabel descriptionLabel;
     JButton button;
     JCheckBox checkBox;
     JSlider slider;
@@ -43,10 +42,6 @@ class OptionController {
                 checkBox.setFocusable(false);
                 checkBox.addActionListener(e -> onUpdate());
                 break;
-            case SLIDER:
-                slider = new JSlider();
-                // TODO
-                break;
             default:
                 break;
         }
@@ -66,6 +61,25 @@ class OptionController {
         comboBox.setSize(128, 24);
         comboBox.setLocation(x, y + height / 2);
         comboBox.addActionListener(e -> onComboBoxUpdate((String) comboBox.getSelectedItem()));
+    }
+
+    OptionController(String label, int min, int max, int init, int row, int column, int tickSpacing) {
+        int x = column * width + 16 + (column * 24);
+        int y = row * height + 16 + (row * 24);
+
+        descriptionLabel = new JLabel(label);
+        descriptionLabel.setSize(width, height / 2);
+        descriptionLabel.setLocation(x, y);
+        this.componentID = SLIDER;
+
+        slider = new JSlider(JSlider.HORIZONTAL, min, max, init);
+        slider.addChangeListener(l -> onSliderUpdate(slider.getValue()));
+        slider.setMajorTickSpacing(tickSpacing);
+        slider.setPaintTicks(true);
+        slider.setPaintLabels(true);
+        slider.setSize(300, (int)(height * 1.75));
+        slider.setLocation(x, (int) (y + height / 2.75));
+        slider.setFocusable(false);
     }
 
     void addComponentsToFrame(JFrame frame) {
@@ -89,13 +103,9 @@ class OptionController {
         frame.add(descriptionLabel);
     }
 
-    void onUpdate() {
-
-    }
-
-    void onComboBoxUpdate(String selected) {
-
-    }
+    void onUpdate() {}
+    void onComboBoxUpdate(String selected) {}
+    void onSliderUpdate(int value) {}
 
     void synchronizeComboBoxSelection(String selection) {
         comboBox.setSelectedItem(selection);

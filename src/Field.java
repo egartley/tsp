@@ -1,11 +1,14 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 
 class Field {
 
-    static final int MAX_POINTS = 5000;
-    static int randomizeAmount = MAX_POINTS;
+    final static int MAX_POINTS = 2000;
+
+    static int maximumPoints = MAX_POINTS;
+    static int randomizeAmount = maximumPoints;
     static short fieldWidth = 850;
     static boolean showPoints = true;
     static boolean isCalculated;
@@ -18,7 +21,7 @@ class Field {
         // correct for field margin/padding
         x -= 5;
         y -= 5;
-        if (points.size() < MAX_POINTS && !isCalculated) {
+        if (points.size() < maximumPoints && !isCalculated) {
             if (x > 7 && x < fieldWidth - 2 && y > 8 && y < Main.WINDOW_HEIGHT - 20) {
                 // within field boundaries
                 boolean exists = false;
@@ -157,7 +160,7 @@ class Field {
             if (showPoints)
                 for (Point point : points)
                     point.render(graphics);
-        } catch (Exception e) {
+        } catch (ConcurrentModificationException e) {
             // non-fatal exception, ignore
         }
     }
