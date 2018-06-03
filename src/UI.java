@@ -16,12 +16,13 @@ class UI {
 
     private static int fieldTextImageX;
     private static int fieldTextImageY;
-    private static short lineIndex = 0;
+    private static short statusLineIndex = 0;
     private static boolean setFontMetrics = false;
 
     private static BufferedImage fieldTextImage;
     private static Font statusFont = new Font("Consolas", Font.BOLD, 14);
     private static Color positiveColor = new Color(0, 208, 21);
+    private static Color[] black = new Color[]{Color.BLACK};
     private static FontMetrics fm;
 
     static ArrayList<ActionButton> buttons = new ArrayList<>();
@@ -75,6 +76,17 @@ class UI {
         fieldTextImageY = Main.WINDOW_HEIGHT / 2 - fieldTextImage.getHeight() / 2;
     }
 
+    /**
+     * Sets an action button's {@link ActionButton#isEnabled isEnabled} within {@link #buttons} to the value of {@code enabled}. Nothing is performed if there is not a button with the given ID
+     *
+     * @param buttonID Identification for the button
+     * @param enabled  Value for {@link ActionButton#isEnabled isEnabled}
+     * @see #OPTIONS_BUTTON
+     * @see #HELP_BUTTON
+     * @see #RANDOMIZE_BUTTON
+     * @see #RESET_BUTTON
+     * @see #CALCULATE_BUTTON
+     */
     static void setButtonIsEnabled(byte buttonID, boolean enabled) {
         if (buttonID != -1 && buttonID < buttons.size())
             buttons.get(buttonID).isEnabled = enabled;
@@ -87,12 +99,15 @@ class UI {
     }
 
     private static void drawStatusLine(Graphics graphics, String[] parts, Color[] colors) {
+        // make sure params are valid
         if (parts.length != colors.length || parts.length == 0)
             return;
 
         short i = 0;
+        // x is always the same (for now)
         int x = 896;
-        int y = 80 + (int) (statusFont.getSize() * 1.375 * lineIndex);
+        // y is increased base on how many times this method has been called
+        int y = 80 + (int) (statusFont.getSize() * 1.375 * statusLineIndex);
         for (String text : parts) {
             graphics.setColor(colors[i]);
             graphics.drawString(text, x, y);
@@ -100,55 +115,67 @@ class UI {
             i++;
         }
 
-        lineIndex++;
+        // increment the index so that the next call will be below this one
+        statusLineIndex++;
     }
 
     private static void drawStatusText(Graphics graphics) {
         graphics.setFont(statusFont);
         if (!setFontMetrics) {
+            // only do this once, since it's not needed every call
             fm = graphics.getFontMetrics(statusFont);
             setFontMetrics = true;
         }
 
         // Field.showPoints
         if (Field.showPoints)
-            drawStatusLine(graphics, new String[]{"Showing Points: ", "TRUE"}, new Color[]{Color.BLACK, positiveColor});
+            drawStatusLine(graphics, new String[]{"Points visible: ", "TRUE"}, new Color[]{Color.BLACK, positiveColor});
         else
-            drawStatusLine(graphics, new String[]{"Showing Points: ", "FALSE"}, new Color[]{Color.BLACK, Color.RED});
+            drawStatusLine(graphics, new String[]{"Points visible: ", "FALSE"}, new Color[]{Color.BLACK, Color.RED});
         // number of points
-        drawStatusLine(graphics, new String[]{"Number of Points: ", String.valueOf(Field.points.size())}, new Color[]{Color.BLACK, Color.BLACK});
+        drawStatusLine(graphics, new String[]{"Number of Points: " + String.valueOf(Field.points.size())}, black);
 
         // calculation status
-        lineIndex++;
+        statusLineIndex++;
         if (Field.isCalculating) {
-            double percent = ((1.0 * Field.segments.size()) / (1.0 * Field.points.size()));
-            drawStatusLine(graphics, new String[]{Field.segments.size() + " of " + Field.points.size()}, new Color[]{Color.BLACK});
-            drawStatusLine(graphics, new String[]{String.format("%.2f", percent * 100.0) + "% complete"}, new Color[]{Color.BLACK});
+            // actual text that describes the current calculation status
+            drawStatusLine(graphics, new String[]{Field.segments.size() + " of " + Field.points.size()}, black);
+            drawStatusLine(graphics, new String[]{"Calculating..."}, black);
 
             // progress bar
             graphics.setColor(Color.BLACK);
-            graphics.drawRect(895, 169, 141, 13);
+            graphics.drawRect(895, 169, 181, 13);
             graphics.setColor(ActionButton.enabledColor);
-            graphics.fillRect(896, 170, (int) (140 * percent), 12);
+            graphics.fillRect(896, 170, (int) (180 * (1.0 * Field.segments.size() / (1.0 * Field.points.size()))), 12);
         } else {
-            drawStatusLine(graphics, new String[]{"Ready to calculate"}, new Color[]{Color.BLACK});
+            // let user know they can calculate, assuming calculate is enabled
+            drawStatusLine(graphics, new String[]{"Ready to calculate"}, black);
+            // last path distance
+            statusLineIndex++;
+            drawStatusLine(graphics, new String[]{"Most recent distance:"}, black);
+            drawStatusLine(graphics, new String[]{Field.lastPathDistance + " meters"}, black);
         }
 
-        lineIndex = 0;
+        // reset status line index so that they will stay be the same next call to render
+        statusLineIndex = 0;
     }
 
     static void render(Graphics graphics) {
+        // if no points, be lazy and show an image of instructional text
         if (Field.points.size() == 0)
             graphics.drawImage(fieldTextImage, fieldTextImageX, fieldTextImageY, fieldTextImage.getWidth(), fieldTextImage.getHeight(), null);
 
+        // render "action buttons"
         for (ActionButton ab : buttons)
             ab.render(graphics);
 
+        // draw status text (calc status, etc)
         drawStatusText(graphics);
     }
 
     static void tick() {
         try {
+            // mainly checking for mouse hover
             for (ActionButton ab : buttons)
                 ab.tick();
         } catch (ConcurrentModificationException e) {

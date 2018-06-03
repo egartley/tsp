@@ -6,9 +6,10 @@ import java.awt.event.MouseEvent;
 
 class ActionButton {
 
+    /**
+     * Whether or not this button is able to be clicked
+     */
     boolean isEnabled;
-
-    private static boolean setFont = false;
 
     private static byte declarationIndex = 0;
 
@@ -38,7 +39,7 @@ class ActionButton {
         this.text = text;
         isEnabled = isEnabledByDefault;
 
-        // auto-calc coordinates based on order of declaration
+        // auto-calculate coordinates based on order of declaration
         x = 896;
         sx = x + ((width / 2) - (fm.stringWidth(text) / 2));
         y = 600 - ((declarationIndex += (offset + 1)) * 44);
@@ -57,11 +58,11 @@ class ActionButton {
      * Called when the button is clicked and enabled
      */
     void onClick() {
-        // meant to be overridden in each declaration
+        // meant to be overridden in individual declarations
     }
 
     void render(Graphics graphics) {
-        // "drop shadow"/accent/bottom border
+        // accent/bottom border
         if (isEnabled) {
             graphics.setColor(enabledAccentColor);
         } else {
@@ -83,6 +84,7 @@ class ActionButton {
     }
 
     void tick() {
+        // emulate hover effect
         if (isClickInBounds(Mouse.x, Mouse.y)) {
             currentColor = hoverColor;
         } else {
@@ -90,6 +92,11 @@ class ActionButton {
         }
     }
 
+    /**
+     * @param cx The x-coordinate to use
+     * @param cy The y-coordinate to use
+     * @return Whether or not the supplied x and y coordinates are overlapping, or "on top of", the button
+     */
     private boolean isClickInBounds(int cx, int cy) {
         return cx >= x && cx <= x + width && cy >= y && cy <= y + height;
     }

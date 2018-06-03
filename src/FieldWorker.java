@@ -2,7 +2,7 @@ class FieldWorker implements Runnable {
 
     @Override
     public void run() {
-        Field.calculate();
+        Field.calculateShortestPath();
     }
 
 }

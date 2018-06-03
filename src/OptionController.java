@@ -75,8 +75,10 @@ class OptionController {
         slider = new JSlider(JSlider.HORIZONTAL, min, max, init);
         slider.addChangeListener(l -> onSliderUpdate(slider.getValue()));
         slider.setMajorTickSpacing(tickSpacing);
+        slider.setMinorTickSpacing(50);
         slider.setPaintTicks(true);
         slider.setPaintLabels(true);
+        slider.setSnapToTicks(true);
         slider.setSize(300, (int)(height * 1.75));
         slider.setLocation(x, (int) (y + height / 2.75));
         slider.setFocusable(false);

@@ -1,3 +1,4 @@
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 import java.awt.event.WindowEvent;
@@ -9,7 +10,7 @@ class Options {
 
     static void show() {
         if (isAlreadyShown)
-            return;
+            return; // prevent multiple windows/frames
 
         // build frame
         JFrame frame = new JFrame("Options");
@@ -74,8 +75,8 @@ class Options {
         else
             randomizeAmountController.synchronizeComboBoxSelection(String.valueOf(Field.randomizeAmount));
 
-        OptionController testController2 = new OptionController("Maximum number of points (" + Field.maximumPoints + ")",
-                0, Field.MAX_POINTS, Field.maximumPoints, 1, 0, 250) {
+        OptionController maximumPointsController = new OptionController("Maximum number of points (" + Field.maximumPoints + ")",
+                Field.MIN_POINTS, Field.MAX_POINTS, Field.maximumPoints, 1, 0, 250) {
             @Override
             void onSliderUpdate(int value) {
                 Field.maximumPoints = value;
@@ -83,8 +84,36 @@ class Options {
                 descriptionLabel.setText("Maximum number of points (" + Field.maximumPoints + ")");
             }
         };
-        testController2.addComponentsToFrame(frame);
+        maximumPointsController.addComponentsToFrame(frame);
 
+        OptionController calculateAfterRandomizeController = new OptionController("Calculate after randomizing", "No", OptionController.CHECKBOX, 0, 1) {
+            @Override
+            void onUpdate() {
+                if (checkBox.getText().equals("No"))
+                    checkBox.setText("Yes");
+                else
+                    checkBox.setText("No");
+                Field.calculateAfterRandomize = checkBox.isSelected();
+            }
+        };
+        calculateAfterRandomizeController.addComponentsToFrame(frame);
+        if (Field.calculateAfterRandomize) {
+            // false by default, but if previously set to true
+            calculateAfterRandomizeController.checkBox.setText("Yes");
+            calculateAfterRandomizeController.checkBox.setSelected(true);
+        }
+
+        // additional components
+        JButton okayButton = new JButton("OK");
+        okayButton.setSize(96, 29);
+        okayButton.setLocation(frame.getWidth() - 120, frame.getHeight() - 72);
+        okayButton.setFocusable(false);
+        okayButton.addActionListener(e -> {
+            frame.dispose();
+            isAlreadyShown = false;
+        });
+
+        frame.add(okayButton);
         frame.setVisible(true);
     }
 

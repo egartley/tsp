@@ -9,6 +9,8 @@ import javax.swing.*;
 
 /**
  * Modified version of https://github.com/egartley/beyond-origins/blob/indev/src/net/egartley/beyondorigins/Game.java
+ *
+ * @author Evan Gartley
  */
 class Main extends Canvas implements Runnable {
 
