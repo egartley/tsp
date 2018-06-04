@@ -5,4 +5,4 @@ Application of the <a href="https://en.wikipedia.org/wiki/Travelling_salesman_pr
 
 > Given a collection of points with Cartesian coordinates, starting at the specified "origin" point, iterate through all the possible paths between all of the other points, finding the shortest of those paths, and continue from the corresponding point until the "destination" point is reached
 
-Here is its actual implementation: https://github.com/egartley/tsp/blob/703c7b1b7e9640d755c6b368507fdec3420234de/src/Field.java#L49
+Here is its actual implementation: https://github.com/egartley/tsp/blob/1a92ec3f726ea68af36559ee6c73e1118a607ee5/src/Field.java#L65
