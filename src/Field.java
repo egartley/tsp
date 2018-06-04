@@ -54,11 +54,18 @@ class Field {
 
         // move point to new mouse x and y
         if (draggedPoint != null) {
-            draggedPoint.x = x - Point.SIZE / 2;
-            draggedPoint.y = y - Point.SIZE / 2;
-            // update segment
-            if (segments.size() > 0)
-                draggedPoint.parentSegment = new Segment(draggedPoint, Segment.getOtherPoint(draggedPoint));
+            // keep point within field boundaries
+            if (Util.isClickInBounds(x - Point.SIZE / 2 + 10, y - Point.SIZE / 2, 8, 8,
+                    fieldWidth, Main.WINDOW_HEIGHT - 25)) {
+                // still needs work
+                draggedPoint.x = x - Point.SIZE / 2;
+                draggedPoint.y = y - Point.SIZE / 2;
+
+                // update segment
+                if (segments.size() > 0)
+                    if (draggedPoint.parentSegment != null)
+                        draggedPoint.parentSegment = new Segment(draggedPoint, Segment.getOtherPoint(draggedPoint));
+            }
         }
         // else, something is wrong
     }
@@ -119,6 +126,7 @@ class Field {
             // there is a base point, so continue
             short index = 0;
             double shortestDistance;
+            Point base = null;
 
             while (index < points.size()) {
                 double distance = 0;
@@ -127,6 +135,9 @@ class Field {
 
                 // find the closest point to current
                 for (Point p : points) {
+                    if (p.isBasePoint)
+                        base = p;
+
                     if (p.equals(current) || p.isTravelled || p.isBasePoint || p.isEndPoint)
                         continue;
 
@@ -155,9 +166,11 @@ class Field {
                     for (Point p : points)
                         if (p.isEndPoint)
                             end = p;
-                    // add the last segment
-                    if (end != null)
+                    // add the last segments
+                    if (end != null) {
                         segments.add(new Segment(current, end));
+                        segments.add(new Segment(end, base));
+                    }
                     // done!
                     break;
                 }

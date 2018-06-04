@@ -20,8 +20,8 @@ class Point extends Entity {
      */
     boolean isTravelled = false;
     boolean showCoordinates = false;
-    boolean setCoordinateFontMetrics = false;
-    int coordinateStringWidth;
+
+    private boolean setCoordinateFontMetrics = false;
 
     /**
      * The {@link Segment} that this point is attached to
@@ -34,7 +34,7 @@ class Point extends Entity {
     private Color color;
     private Color borderColor = Color.BLACK;
     private Color coordinateColor = new Color(0, 0, 0, 170);
-    private Font coordinateFont = new Font("Consolas", Font.BOLD, 12);
+    private Font coordinateFont = new Font("Consolas", Font.PLAIN, 12);
     private FontMetrics coordinateFontMetrics;
     private String coordinateString;
 
@@ -73,16 +73,16 @@ class Point extends Entity {
                 setCoordinateFontMetrics = true;
             }
             coordinateString = x + ", " + y;
-            coordinateStringWidth = coordinateFontMetrics.stringWidth(coordinateString);
-            graphics.fillRect(Mouse.x + 4, Mouse.y - 18, coordinateStringWidth, 18);
+            graphics.fillRect(Mouse.x + 4, Mouse.y - 18, coordinateFontMetrics.stringWidth(coordinateString) + 8, 19);
             graphics.setColor(Color.WHITE);
+            graphics.setFont(coordinateFont);
             graphics.drawString(coordinateString, Mouse.x + 8, Mouse.y - 4);
         }
     }
 
     @Override
     public void tick() {
-        showCoordinates = Util.isClickInBounds(Mouse.x, Mouse.y, x, y, width, height);
+        showCoordinates = Util.isClickInBounds(Mouse.x, Mouse.y, x - 5, y - 5, width + 5, height + 5);
     }
 
     /**
