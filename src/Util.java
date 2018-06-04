@@ -1,5 +1,4 @@
-import java.awt.Graphics2D;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -31,7 +30,7 @@ class Util {
      *            New height to resize to
      * @return A resized version of the given buffered image
      */
-    public static BufferedImage resized(BufferedImage image, int w, int h) {
+    static BufferedImage resized(BufferedImage image, int w, int h) {
         return toBufferedImage(image.getScaledInstance(w, h, Image.SCALE_DEFAULT));
     }
 
@@ -45,7 +44,7 @@ class Util {
      *            The minimum value the random integer could be
      * @return A random integer between the given maximum and minimum
      */
-    public static int randomInt(int maximum, int minimum) {
+    static int randomInt(int maximum, int minimum) {
         // this is using ThreadLocalRandom because that is apparently more efficient
         return ThreadLocalRandom.current().nextInt(minimum, maximum);
     }
@@ -69,12 +68,12 @@ class Util {
      *            Whether or not the include the maximum as a possible value
      * @return A random integer between the given maximum and minimum
      */
-    public static int randomInt(int maximum, int minimum, boolean inclusive) {
-        if (inclusive) {
-            return randomInt(maximum + 1, minimum);
-        } else {
-            return randomInt(maximum, minimum);
-        }
+    static int randomInt(int maximum, int minimum, boolean inclusive) {
+        return inclusive ? randomInt(maximum + 1, minimum) : randomInt(maximum, minimum);
+    }
+
+    static boolean isClickInBounds(int cx, int cy, int x, int y, int width, int height) {
+        return cx >= x && cx <= x + width && cy >= y && cy <= y + height;
     }
 
 }

@@ -1,11 +1,6 @@
-import java.awt.Canvas;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.image.BufferStrategy;
-
 import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferStrategy;
 
 /**
  * Modified version of https://github.com/egartley/beyond-origins/blob/indev/src/net/egartley/beyondorigins/Game.java
@@ -27,10 +22,6 @@ class Main extends Canvas implements Runnable {
 
     // THREADS
     private static Thread masterRenderThread;
-    private static Thread masterTickThread;
-
-    // THREAD OBJECTS
-    private static MasterTick tick = new MasterTick();
 
     // FLAGS
     static boolean running = false;
@@ -40,7 +31,7 @@ class Main extends Canvas implements Runnable {
     private static Main self;
 
     // GAMESTATES
-    static GameState currentGameState;
+    private static GameState currentGameState;
 
     private void init() {
         currentGameState = new InGameState();
@@ -70,15 +61,13 @@ class Main extends Canvas implements Runnable {
     }
 
     private synchronized void start() {
-        if (running) {
+        if (running)
             return;
-        }
         running = true;
         masterRenderThread = new Thread(this);
         masterRenderThread.setPriority(1);
-        masterRenderThread.setName("Main-Render");
+        masterRenderThread.setName("My-Main-Thread");
 
-        restartMainTickThread();
         masterRenderThread.start();
     }
 
@@ -97,10 +86,11 @@ class Main extends Canvas implements Runnable {
     @Override
     public void run() {
         init();
+        tick();
         render();
         long lastTime = System.nanoTime();
         long timer = System.currentTimeMillis();
-        double ns = 16666666.666666666;
+        double ns = 16666666.66666666;
         double delta = 0.0D;
         requestFocus();
         while (running) {
@@ -108,11 +98,11 @@ class Main extends Canvas implements Runnable {
             delta += (now - lastTime) / ns;
             lastTime = now;
             if (delta >= 1.0D) {
+                tick();
                 render();
                 delta -= 1.0D;
-                if (System.currentTimeMillis() - timer > 1000L) {
+                if (System.currentTimeMillis() - timer > 1000L)
                     timer += 1000L;
-                }
             }
             try {
                 Thread.sleep(1L);
@@ -139,12 +129,9 @@ class Main extends Canvas implements Runnable {
         bufferStrategy.dispose();
     }
 
-    private static void restartMainTickThread() {
-        runTickThread = true;
-        masterTickThread = new Thread(tick);
-        masterTickThread.setPriority(2);
-        masterTickThread.setName("Main-Tick");
-        masterTickThread.start();
+    private synchronized void tick() {
+        if (currentGameState != null)
+            currentGameState.tick();
     }
 
 }

@@ -1,5 +1,4 @@
-import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.*;
 import java.util.ArrayList;
 
 class Field {
@@ -193,13 +192,22 @@ class Field {
         graphics.drawRect(8, 8, fieldWidth, Main.WINDOW_HEIGHT - 17);
 
         try {
-            if (isCalculated || isCalculating)
+            if (isCalculated && !isCalculating)
                 for (Segment segment : segments)
                     segment.render(graphics);
 
             if (showPoints)
                 for (Point point : points)
                     point.render(graphics);
+        } catch (Exception e) {
+            // ignore, probably just concurrent modification because of the overlapping of render and tick threads
+        }
+    }
+
+    static void tick() {
+        try {
+            for (Point p : points)
+                p.tick();
         } catch (Exception e) {
             // ignore, probably just concurrent modification because of the overlapping of render and tick threads
         }

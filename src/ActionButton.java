@@ -1,7 +1,4 @@
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 
 class ActionButton {
@@ -92,12 +89,7 @@ class ActionButton {
         }
     }
 
-    /**
-     * @param cx The x-coordinate to use
-     * @param cy The y-coordinate to use
-     * @return Whether or not the supplied x and y coordinates are overlapping, or "on top of", the button
-     */
     private boolean isClickInBounds(int cx, int cy) {
-        return cx >= x && cx <= x + width && cy >= y && cy <= y + height;
+        return Util.isClickInBounds(cx, cy, x, y, width, height);
     }
 }
