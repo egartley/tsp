@@ -1,5 +1,4 @@
-import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.*;
 
 class Segment extends Entity {
 
@@ -16,9 +15,7 @@ class Segment extends Entity {
     }
 
     static Point getOtherPoint(Point p) {
-        if (p.parentSegment.point1.equals(p))
-            return p.parentSegment.point2;
-        return p.parentSegment.point1;
+        return p.parentSegment.point1.equals(p) ? p.parentSegment.point2 : p.parentSegment.point1;
     }
 
     @Override

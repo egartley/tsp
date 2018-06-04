@@ -5,6 +5,8 @@ import java.awt.*;
  */
 class Point extends Entity {
 
+    static final int SIZE = 10;
+
     /**
      * Whether or not this point is the first point. In the context of TSP, it is the "origin city"
      */
@@ -43,7 +45,7 @@ class Point extends Entity {
      * @param y The y coordinate
      */
     Point(int x, int y) {
-        super(10, 10);
+        super(SIZE, SIZE);
         this.x = x;
         this.y = y;
         color = new Color(Util.randomInt(255, 0), Util.randomInt(255, 0),
@@ -68,9 +70,10 @@ class Point extends Entity {
             graphics.setColor(coordinateColor);
             if (!setCoordinateFontMetrics) {
                 coordinateFontMetrics = graphics.getFontMetrics(coordinateFont);
-                coordinateStringWidth = coordinateFontMetrics.stringWidth(coordinateString);
                 setCoordinateFontMetrics = true;
             }
+            coordinateString = x + ", " + y;
+            coordinateStringWidth = coordinateFontMetrics.stringWidth(coordinateString);
             graphics.fillRect(Mouse.x + 4, Mouse.y - 18, coordinateStringWidth, 18);
             graphics.setColor(Color.WHITE);
             graphics.drawString(coordinateString, Mouse.x + 8, Mouse.y - 4);

@@ -15,6 +15,7 @@ class Field {
     static boolean isCalculated;
     static boolean isCalculating;
 
+    static Point draggedPoint = null;
     static ArrayList<Point> points = new ArrayList<>();
     static ArrayList<Segment> segments = new ArrayList<>();
 
@@ -32,6 +33,34 @@ class Field {
             // the point before that is no longer the end
             points.get(points.size() - 2).isEndPoint = false;
         }
+    }
+
+    static void onDragEnd() {
+        draggedPoint.showCoordinates = false;
+        draggedPoint = null;
+    }
+
+    static void onDrag(int x, int y) {
+        // get point
+        if (draggedPoint == null) {
+            for (Point p : points)
+                if (Util.isClickInBounds(x, y, p.x, p.y, p.width, p.height)) {
+                    draggedPoint = p;
+                    draggedPoint.showCoordinates = true;
+                    break;
+                }
+        }
+        // else, already have a dragged point
+
+        // move point to new mouse x and y
+        if (draggedPoint != null) {
+            draggedPoint.x = x - Point.SIZE / 2;
+            draggedPoint.y = y - Point.SIZE / 2;
+            // update segment
+            if (segments.size() > 0)
+                draggedPoint.parentSegment = new Segment(draggedPoint, Segment.getOtherPoint(draggedPoint));
+        }
+        // else, something is wrong
     }
 
     static void onClick(int x, int y) {
@@ -113,7 +142,10 @@ class Field {
                 }
                 if (closest != null) {
                     lastPathDistance += distance;
-                    segments.add(new Segment(current, closest));
+                    Segment segment = new Segment(current, closest);
+                    current.parentSegment = segment;
+                    closest.parentSegment = segment;
+                    segments.add(segment);
                     closest.isTravelled = true;
                     // "travel"
                     current = closest;

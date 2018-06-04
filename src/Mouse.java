@@ -14,7 +14,7 @@ class Mouse implements MouseListener, MouseMotionListener {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-
+        Field.onDrag(e.getX(), e.getY());
     }
 
     @Override
@@ -35,14 +35,17 @@ class Mouse implements MouseListener, MouseMotionListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        Field.onClick(e.getX(), e.getY());
-        for (ActionButton ab : UI.buttons)
-            ab.checkClick(e);
+
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
+        if (Field.draggedPoint == null)
+            Field.onClick(e.getX(), e.getY());
+        else
+            Field.onDragEnd();
+        for (ActionButton ab : UI.buttons)
+            ab.checkClick(e);
     }
 
 }
