@@ -1,6 +1,4 @@
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -19,6 +17,7 @@ class Options {
         frame.setResizable(false);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setLayout(null);
+        frame.setIconImage(new ImageIcon("src//gear.png").getImage());
         frame.addWindowListener(new WindowListener() {
             @Override
             public void windowOpened(WindowEvent e) {

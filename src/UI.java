@@ -148,8 +148,13 @@ class UI {
             graphics.setColor(ActionButton.enabledColor);
             graphics.fillRect(896, 170, (int) (180 * (1.0 * Field.segments.size() / (1.0 * Field.points.size()))), 12);
         } else {
-            // let user know they can calculate, assuming calculate is enabled
-            drawStatusLine(graphics, new String[]{"Ready to calculate"}, black);
+            if (Field.points.size() <= Field.maximumPoints && Field.points.size() != 0) {
+                // let user know they can calculate, assuming calculate is enabled
+                drawStatusLine(graphics, new String[]{"Ready to calculate"}, black);
+            } else if (Field.points.size() == 0) {
+                // need to add points
+                drawStatusLine(graphics, new String[]{"Start by adding points"}, black);
+            }
             // last path distance
             statusLineIndex++;
             drawStatusLine(graphics, new String[]{"Most recent distance:"}, black);

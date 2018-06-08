@@ -1,5 +1,4 @@
-import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.*;
 import java.util.ArrayList;
 
 class Field {
@@ -16,6 +15,7 @@ class Field {
     static boolean isCalculated;
     static boolean isCalculating;
 
+    static Point draggedPoint = null;
     static ArrayList<Point> points = new ArrayList<>();
     static ArrayList<Segment> segments = new ArrayList<>();
 
@@ -33,6 +33,41 @@ class Field {
             // the point before that is no longer the end
             points.get(points.size() - 2).isEndPoint = false;
         }
+    }
+
+    static void onDragEnd() {
+        draggedPoint.showCoordinates = false;
+        draggedPoint = null;
+    }
+
+    static void onDrag(int x, int y) {
+        // get point
+        if (draggedPoint == null) {
+            for (Point p : points)
+                if (Util.isClickInBounds(x, y, p.x, p.y, p.width, p.height)) {
+                    draggedPoint = p;
+                    draggedPoint.showCoordinates = true;
+                    break;
+                }
+        }
+        // else, already have a dragged point
+
+        // move point to new mouse x and y
+        if (draggedPoint != null) {
+            // keep point within field boundaries
+            if (Util.isClickInBounds(x - Point.SIZE / 2 - 1, y - Point.SIZE / 2, 8, 8,
+                    fieldWidth - 11, Main.WINDOW_HEIGHT - 26)) {
+                // still needs work
+                draggedPoint.x = x - Point.SIZE / 2;
+                draggedPoint.y = y - Point.SIZE / 2;
+
+                // update segment
+                if (segments.size() > 0)
+                    if (draggedPoint.parentSegment != null)
+                        draggedPoint.parentSegment = new Segment(draggedPoint, Segment.getOtherPoint(draggedPoint));
+            }
+        }
+        // else, something is wrong
     }
 
     static void onClick(int x, int y) {
@@ -91,6 +126,7 @@ class Field {
             // there is a base point, so continue
             short index = 0;
             double shortestDistance;
+            Point base = null;
 
             while (index < points.size()) {
                 double distance = 0;
@@ -99,6 +135,9 @@ class Field {
 
                 // find the closest point to current
                 for (Point p : points) {
+                    if (p.isBasePoint)
+                        base = p;
+
                     if (p.equals(current) || p.isTravelled || p.isBasePoint || p.isEndPoint)
                         continue;
 
@@ -114,7 +153,10 @@ class Field {
                 }
                 if (closest != null) {
                     lastPathDistance += distance;
-                    segments.add(new Segment(current, closest));
+                    Segment segment = new Segment(current, closest);
+                    current.parentSegment = segment;
+                    closest.parentSegment = segment;
+                    segments.add(segment);
                     closest.isTravelled = true;
                     // "travel"
                     current = closest;
@@ -124,9 +166,11 @@ class Field {
                     for (Point p : points)
                         if (p.isEndPoint)
                             end = p;
-                    // add the last segment
-                    if (end != null)
+                    // add the last segments
+                    if (end != null) {
                         segments.add(new Segment(current, end));
+                        segments.add(new Segment(end, base));
+                    }
                     // done!
                     break;
                 }
@@ -193,7 +237,7 @@ class Field {
         graphics.drawRect(8, 8, fieldWidth, Main.WINDOW_HEIGHT - 17);
 
         try {
-            if (isCalculated || isCalculating)
+            if (isCalculated && !isCalculating)
                 for (Segment segment : segments)
                     segment.render(graphics);
 
@@ -201,7 +245,16 @@ class Field {
                 for (Point point : points)
                     point.render(graphics);
         } catch (Exception e) {
-            // ignore, probably just concurrent modification because of the overlapping of render and tick threads
+            // ignore, concurrent modification because of overlapping render and tick threads
+        }
+    }
+
+    static void tick() {
+        try {
+            for (Point p : points)
+                p.tick();
+        } catch (Exception e) {
+            // ignore, concurrent modification because of overlapping render and tick threads
         }
     }
 

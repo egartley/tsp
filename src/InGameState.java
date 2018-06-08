@@ -1,4 +1,4 @@
-import java.awt.Graphics;
+import java.awt.*;
 
 /**
  * Modified version of https://github.com/egartley/beyond-origins/blob/indev/src/net/egartley/beyondorigins/gamestates/InGameState.java
@@ -24,6 +24,7 @@ class InGameState extends GameState {
     @Override
     public void tick() {
         UI.tick();
+        Field.tick();
     }
 
 }
