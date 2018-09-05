@@ -1,5 +1,7 @@
 # Travelling Salesman Problem
-Final project for AP Computer Science in the 2017-2018 school year
+<img src="https://raw.githubusercontent.com/egartley/tsp/master/src/screenshot.png">
+
+## Information
 
 Application of the <a href="https://en.wikipedia.org/wiki/Travelling_salesman_problem">travelling salesman problem</a>, or TSP. This does not always find the shortest possible route between the points, but is more of a proof-of-concept for being able to attempt it. Currently, this is how it works:
 
