@@ -1,5 +1,5 @@
 # Travelling Salesman Problem
-<img src="https://raw.githubusercontent.com/egartley/tsp/master/src/screenshot.png">
+<img src="https://raw.githubusercontent.com/egartley/tsp/9bcda96de377d842be8e0dcb19b7e096032b869f/src/screenshot.png">
 
 ## Information
 
