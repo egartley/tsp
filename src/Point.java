@@ -33,7 +33,7 @@ class Point extends Entity {
      */
     private Color color;
     private Color borderColor = Color.BLACK;
-    private Color coordinateColor = new Color(0, 0, 0, 170);
+    private Color coordinateColor = new Color(0, 0, 0);
     private Font coordinateFont = new Font("Consolas", Font.PLAIN, 12);
     private FontMetrics coordinateFontMetrics;
     private String coordinateString;
@@ -58,21 +58,21 @@ class Point extends Entity {
         // actually draw the point
         graphics.setColor(color);
         graphics.fillRect(x, y, width, height);
-        // surround with black border to make it easier to see, especially if the random color is lighter
+        // surround with 1px black border to make it easier to see, especially if the random color is lighter
         graphics.setColor(borderColor);
         graphics.drawRect(x - 1, y - 1, width + 1, height + 1);
-        // visual indication that this is either the base or end point
+        // visual indication if this is either the base or end point
         if (isBasePoint || isEndPoint)
             graphics.drawRect(x - 3, y - 3, width + 5, height + 5);
 
-        // visual coordinates
+        // display coordinates on hover
         if (showCoordinates) {
             graphics.setColor(coordinateColor);
             if (!setCoordinateFontMetrics) {
                 coordinateFontMetrics = graphics.getFontMetrics(coordinateFont);
                 setCoordinateFontMetrics = true;
             }
-            coordinateString = x + ", " + y;
+            coordinateString = this.toString();
             graphics.fillRect(Mouse.x + 4, Mouse.y - 18, coordinateFontMetrics.stringWidth(coordinateString) + 8, 19);
             graphics.setColor(Color.WHITE);
             graphics.setFont(coordinateFont);
@@ -94,7 +94,7 @@ class Point extends Entity {
     }
 
     public String toString() {
-        return "(" + x + ", " + y + ")";
+        return "(x=" + x + ", y=" + y + ")";
     }
 
 }

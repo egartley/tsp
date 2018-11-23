@@ -3,7 +3,7 @@ import java.awt.*;
 import java.awt.image.BufferStrategy;
 
 /**
- * Modified version of https://github.com/egartley/beyond-origins/blob/indev/src/net/egartley/beyondorigins/Game.java
+ * Modified version of https://github.com/egartley/beyond-origins/blob/master/src/net/egartley/beyondorigins/Game.java
  *
  * @author Evan Gartley
  */
@@ -16,16 +16,15 @@ class Main extends Canvas implements Runnable {
     private Graphics graphics;
     private BufferStrategy bufferStrategy;
 
-    // CONSTANTS
-    static final int WINDOW_WIDTH = windowDimension.width - 6;
-    static final int WINDOW_HEIGHT = windowDimension.height - 29;
+    // COMMON
+    static int WINDOW_WIDTH = windowDimension.width - 6;
+    static int WINDOW_HEIGHT = windowDimension.height - 29;
 
     // THREADS
-    private static Thread masterRenderThread;
+    private static Thread masterThread;
 
     // FLAGS
     static boolean running = false;
-    static boolean runTickThread = true;
     static boolean initializedFontMetrics = false;
 
     private static Main self;
@@ -37,8 +36,11 @@ class Main extends Canvas implements Runnable {
         currentGameState = new InGameState();
         frame = new JFrame("Travelling Salesman");
         frame.setSize(windowDimension.width, windowDimension.height);
+        frame.setMinimumSize(windowDimension);
+        frame.setPreferredSize(windowDimension);
+        // would you really need anything bigger than 1920x1080?
+        frame.setMaximumSize(new Dimension(1920, 1080));
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setResizable(false);
         this.addMouseListener(new Mouse());
         this.addMouseMotionListener(new Mouse());
         frame.add(self);
@@ -47,7 +49,7 @@ class Main extends Canvas implements Runnable {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
-            System.out.println("Could not set the look and feel!");
+            System.out.println("Could not set the look and feel! (macOS, perhaps? Why are you using Java on macOS?)");
         }
         frame.setVisible(true);
     }
@@ -64,11 +66,9 @@ class Main extends Canvas implements Runnable {
         if (running)
             return;
         running = true;
-        masterRenderThread = new Thread(this);
-        masterRenderThread.setPriority(1);
-        masterRenderThread.setName("My-Main-Thread");
-
-        masterRenderThread.start();
+        masterThread = new Thread(this);
+        masterThread.setName("Master");
+        masterThread.start();
     }
 
     private synchronized void stop() {
@@ -77,7 +77,7 @@ class Main extends Canvas implements Runnable {
         }
         running = false;
         try {
-            masterRenderThread.join();
+            masterThread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -130,6 +130,8 @@ class Main extends Canvas implements Runnable {
     }
 
     private synchronized void tick() {
+        WINDOW_WIDTH = frame.getWidth() - 6;
+        WINDOW_HEIGHT = frame.getHeight() - 29;
         if (currentGameState != null)
             currentGameState.tick();
     }

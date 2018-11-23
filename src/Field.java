@@ -8,12 +8,14 @@ class Field {
 
     static int maximumPoints = MAX_POINTS / 2;
     static int randomizeAmount = maximumPoints;
-    static short fieldWidth = 850;
+    static int fieldWidth = 850;
     static double lastPathDistance = Double.NaN;
     static boolean showPoints = true;
     static boolean calculateAfterRandomize;
-    static boolean isCalculated;
     static boolean isCalculating;
+
+    private static boolean isCalculated;
+    private static boolean isDraggedPointChanged;
 
     static Point draggedPoint = null;
     static ArrayList<Point> points = new ArrayList<>();
@@ -38,6 +40,11 @@ class Field {
     static void onDragEnd() {
         draggedPoint.showCoordinates = false;
         draggedPoint = null;
+
+        if (isDraggedPointChanged) {
+            calculate();
+            isDraggedPointChanged = false;
+        }
     }
 
     static void onDrag(int x, int y) {
@@ -57,9 +64,9 @@ class Field {
             // keep point within field boundaries
             if (Util.isClickInBounds(x - Point.SIZE / 2 - 1, y - Point.SIZE / 2, 8, 8,
                     fieldWidth - 11, Main.WINDOW_HEIGHT - 26)) {
-                // still needs work
                 draggedPoint.x = x - Point.SIZE / 2;
                 draggedPoint.y = y - Point.SIZE / 2;
+                isDraggedPointChanged = true;
 
                 // update segment
                 if (segments.size() > 0)
@@ -97,7 +104,13 @@ class Field {
         }
     }
 
-    static synchronized void calculateShortestPath() {
+    static void calculate() {
+        if (!isCalculating) {
+            new Thread(Field::calculateShortestPath).start();
+        }
+    }
+
+    private static synchronized void calculateShortestPath() {
         Point current = null;
         isCalculating = true;
         // reset lastPathDistance from any previous calculation
@@ -220,21 +233,21 @@ class Field {
         isCalculated = false;
         if (calculateAfterRandomize) {
             // however if option is set to calculate after randomizing, then do it
-            new Thread(new FieldWorker()).start();
+            new Thread(Field::calculateShortestPath).start();
         }
         // enable the calculate and reset buttons
         UI.setButtonIsEnabled(UI.RESET_BUTTON, true);
         UI.setButtonIsEnabled(UI.CALCULATE_BUTTON, true);
     }
 
-    static void hideShowPoints() {
+    static void togglePointVisibility() {
         showPoints = !showPoints;
     }
 
     static void render(Graphics graphics) {
-        // field border (#BuildTheWall)
+        // field border (#FinishTheWall)
         graphics.setColor(Color.BLACK);
-        graphics.drawRect(8, 8, fieldWidth, Main.WINDOW_HEIGHT - 17);
+        graphics.drawRect(8, 8, fieldWidth, Main.WINDOW_HEIGHT - 27);
 
         try {
             if (isCalculated && !isCalculating)
@@ -250,6 +263,7 @@ class Field {
     }
 
     static void tick() {
+        fieldWidth = Main.WINDOW_WIDTH - 264;
         try {
             for (Point p : points)
                 p.tick();

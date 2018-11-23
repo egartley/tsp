@@ -14,8 +14,14 @@ class ActionButton {
     private short height = 32;
     private int x;
     private int y;
-    private int sx;
-    private int sy;
+    private int baseX = 218;
+    private int baseY;
+    private int baseYMultiplier = 44;
+    private int baseStringX;
+    private int baseStringY = 23;
+    private int stringX;
+    private int stringY;
+    private int stringWidth;
 
     private String text;
     private Color disabledColor = Color.DARK_GRAY;
@@ -36,11 +42,11 @@ class ActionButton {
         this.text = text;
         isEnabled = isEnabledByDefault;
 
-        // auto-calculate coordinates based on order of declaration
-        x = 896;
-        sx = x + ((width / 2) - (fm.stringWidth(text) / 2));
-        y = 600 - ((declarationIndex += (offset + 1)) * 44);
-        sy = y + 23;
+        // auto-calculate initial coordinates based on order of declaration
+        baseY = (declarationIndex += (offset + 1)) * baseYMultiplier;
+        stringWidth = fm.stringWidth(text);
+        baseStringX = (width / 2) - (stringWidth / 2);
+        tick();
     }
 
     /**
@@ -55,7 +61,7 @@ class ActionButton {
      * Called when the button is clicked and enabled
      */
     void onClick() {
-        // meant to be overridden in individual declarations
+
     }
 
     void render(Graphics graphics) {
@@ -77,10 +83,15 @@ class ActionButton {
         // text
         graphics.setFont(font);
         graphics.setColor(textColor);
-        graphics.drawString(text, sx, sy);
+        graphics.drawString(text, stringX, stringY);
     }
 
     void tick() {
+        // update position (for if/when window is re-sized)
+        x = Main.WINDOW_WIDTH - baseX;
+        y = Main.WINDOW_HEIGHT - baseYMultiplier - baseY;
+        stringX = x + baseStringX;
+        stringY = y + baseStringY;
         // emulate hover effect
         if (isClickInBounds(Mouse.x, Mouse.y)) {
             currentColor = hoverColor;

@@ -1,7 +1,7 @@
 import java.awt.*;
 
 /**
- * Modified version of https://github.com/egartley/beyond-origins/blob/indev/src/net/egartley/beyondorigins/objects/GameState.java
+ * Modified version of https://github.com/egartley/beyond-origins/blob/master/src/net/egartley/beyondorigins/objects/GameState.java
  */
 public abstract class GameState {
 

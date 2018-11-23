@@ -44,6 +44,7 @@ class Mouse implements MouseListener, MouseMotionListener {
             Field.onClick(e.getX(), e.getY());
         else
             Field.onDragEnd();
+
         for (ActionButton ab : UI.buttons)
             ab.checkClick(e);
     }
