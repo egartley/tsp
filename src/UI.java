@@ -13,15 +13,13 @@ class UI {
     static final byte HELP_BUTTON = 1;
     static final byte OPTIONS_BUTTON = 0;
 
+    private static FontMetrics fm;
+    private static BufferedImage fieldTextImage;
     private static short statusLineIndex = 0;
     private static boolean setFontMetrics = false;
-
-    private static BufferedImage fieldTextImage;
-    private static Font statusFont = new Font("Arial", Font.BOLD, 15);
-    private static Color positiveColor = new Color(0, 208, 21);
-    private static Color negativeColor = Color.RED;
-    private static Color[] black = new Color[]{Color.BLACK};
-    private static FontMetrics fm;
+    private static final Font statusFont = new Font("Arial", Font.BOLD, 15);
+    private static final Color positiveColor = new Color(0, 208, 21);
+    private static final Color negativeColor = Color.RED;
 
     static ArrayList<ActionButton> buttons = new ArrayList<>();
 
@@ -35,7 +33,6 @@ class UI {
         buttons.add(new ActionButton("Help", true, fm) {
             @Override
             void onClick() {
-
             }
         });
         buttons.add(new ActionButton("Randomize", true, fm, 1) {
@@ -62,7 +59,6 @@ class UI {
                 Field.togglePointVisibility();
             }
         });
-
         try {
             fieldTextImage = ImageIO.read(new File("src//field-text.png"));
         } catch (IOException e) {
@@ -70,43 +66,28 @@ class UI {
         }
     }
 
-    /**
-     * Sets an action button's {@link ActionButton#isEnabled isEnabled}
-     * within {@link #buttons} to the value of {@code enabled}. Nothing is
-     * performed if there is not a button with the given ID
-     *
-     * @param buttonID
-     *         Identification for the button
-     * @param enabled
-     *         Value for {@link ActionButton#isEnabled isEnabled}
-     *
-     * @see #OPTIONS_BUTTON
-     * @see #HELP_BUTTON
-     * @see #RANDOMIZE_BUTTON
-     * @see #RESET_BUTTON
-     * @see #CALCULATE_BUTTON
-     */
     static void setButtonIsEnabled(byte buttonID, boolean enabled) {
-        if (buttonID != -1 && buttonID < buttons.size())
+        if (buttonID != -1 && buttonID < buttons.size()) {
             buttons.get(buttonID).isEnabled = enabled;
+        }
     }
 
     static boolean getButtonIsEnabled(byte buttonID) {
-        if (buttonID != -1 && buttonID < buttons.size())
-            return buttons.get(buttonID).isEnabled;
-        return false;
+        return buttonID != -1 && buttonID < buttons.size() && buttons.get(buttonID).isEnabled;
     }
 
-    private static void drawStatusLine(Graphics graphics, String[] parts
-            , Color[] colors) {
-        // make sure params are valid
-        if (parts.length != colors.length || parts.length == 0)
-            return;
+    private static void drawStatusLine(Graphics graphics, String text) {
+        drawStatusLine(graphics, new String[]{text}, new Color[]{Color.BLACK});
+    }
 
+    private static void drawStatusLine(Graphics graphics, String[] parts, Color[] colors) {
+        // make sure params are valid
+        if (parts.length != colors.length || parts.length == 0) {
+            return;
+        }
         short i = 0;
         int x = Main.WINDOW_WIDTH - 218;
-        // y is increased base on how many times this method has been
-        // called
+        // y is increased base on how many times this method has been called
         int y = 80 + (int) (statusFont.getSize() * 1.375 * statusLineIndex);
         for (String text : parts) {
             graphics.setColor(colors[i]);
@@ -114,7 +95,6 @@ class UI {
             x += fm.stringWidth(text);
             i++;
         }
-
         // increment the index so that the next call will be below this one
         statusLineIndex++;
     }
@@ -126,54 +106,33 @@ class UI {
             fm = graphics.getFontMetrics(statusFont);
             setFontMetrics = true;
         }
-
-        // Field.showPoints
-        if (Field.showPoints)
-            drawStatusLine(graphics, new String[]{"Points visible: ",
-                    "TRUE"}, new Color[]{Color.BLACK, positiveColor});
-        else
-            drawStatusLine(graphics, new String[]{"Points visible: ",
-                    "FALSE"}, new Color[]{Color.BLACK, negativeColor});
+        // whether or not points are showing
+        drawStatusLine(graphics, new String[]{"Visibility: ", (Field.showPoints) ? "Shown" : "Hidden"}, new Color[]{Color.BLACK, (Field.showPoints) ? positiveColor : negativeColor});
         // number of points
-        drawStatusLine(graphics,
-                new String[]{"Total points: " + Field.points.size()},
-                black);
-
+        drawStatusLine(graphics, "Number of points: " + Field.points.size());
         // calculation status
         statusLineIndex++;
         if (Field.isCalculating) {
             // actual text that describes the current calculation status
-            drawStatusLine(graphics,
-                    new String[]{Field.segments.size() + " of " + Field.points.size()}, black);
-            drawStatusLine(graphics, new String[]{"Calculating..."},
-                    black);
-
+            drawStatusLine(graphics, Field.segments.size() + " of " + Field.points.size());
+            drawStatusLine(graphics, "Calculating...");
             // progress bar
             graphics.setColor(Color.BLACK);
             graphics.drawRect(Main.WINDOW_WIDTH - 218, 169, 181, 13);
             graphics.setColor(ActionButton.enabledColor);
-            graphics.fillRect(Main.WINDOW_WIDTH - 217, 170,
-                    (int) (180 * ((1.0 * Field.segments.size()) / (1.0 * Field.points.size()))), 12);
+            graphics.fillRect(Main.WINDOW_WIDTH - 217, 170, (int) (180 * ((1.0 * Field.segments.size()) / (1.0 * Field.points.size()))), 12);
         } else {
             if (Field.points.size() <= Field.maximumPoints && Field.points.size() != 0) {
-                // let user know they can calculate, assuming calculate
-                // is enabled
-                drawStatusLine(graphics, new String[]{"Ready to " +
-                        "calculate"}, black);
+                // let user know they can calculate, assuming calculate is enabled
+                drawStatusLine(graphics, "Ready to calculate");
             } else if (Field.points.size() == 0) {
                 // need to add points
-                drawStatusLine(graphics, new String[]{"Start by adding " +
-                        "points"}, black);
+                drawStatusLine(graphics, "Start by adding points");
             }
             // last path distance
             statusLineIndex++;
-            drawStatusLine(graphics, new String[]{"Most recent " +
-                    "distance:"}, black);
-            drawStatusLine(graphics,
-                    new String[]{Field.lastPathDistance + " units"},
-                    black);
+            drawStatusLine(graphics, "Distance: " + ((Field.lastPathDistance == 0.0) ? "None" : Field.lastPathDistance));
         }
-
         // reset status line index so that they will stay be the same
         // next call to render
         statusLineIndex = 0;
@@ -181,23 +140,25 @@ class UI {
 
     static void render(Graphics graphics) {
         // if no points, be lazy and show an image of instructional text
-        if (Field.points.size() == 0)
+        if (Field.points.size() == 0) {
             graphics.drawImage(fieldTextImage,
-                    (Field.fieldWidth / 2 - fieldTextImage.getWidth() / 2) + 7, Main.WINDOW_HEIGHT / 2 - fieldTextImage.getHeight() / 2, fieldTextImage.getWidth(), fieldTextImage.getHeight(), null);
-
+                    (Field.fieldWidth / 2 - fieldTextImage.getWidth() / 2) + 7,
+                    Main.WINDOW_HEIGHT / 2 - fieldTextImage.getHeight() / 2,
+                    fieldTextImage.getWidth(), fieldTextImage.getHeight(), null);
+        }
         // render "action buttons"
-        for (ActionButton ab : buttons)
+        for (ActionButton ab : buttons) {
             ab.render(graphics);
-
+        }
         // draw status text (calc status, etc.)
         drawStatusText(graphics);
     }
 
     static void tick() {
         try {
-            // mainly checking for mouse hover
-            for (ActionButton ab : buttons)
+            for (ActionButton ab : buttons) {
                 ab.tick();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

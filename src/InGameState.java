@@ -1,8 +1,5 @@
 import java.awt.*;
 
-/**
- * Modified version of https://github.com/egartley/beyond-origins/blob/master/src/net/egartley/beyondorigins/gamestates/InGameState.java
- */
 class InGameState extends GameState {
 
     private boolean setButtonFont = false;

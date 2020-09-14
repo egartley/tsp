@@ -9,17 +9,16 @@ class Field {
     static int maximumPoints = MAX_POINTS / 2;
     static int randomizeAmount = maximumPoints;
     static int fieldWidth = 850;
-    static double lastPathDistance = Double.NaN;
+    static double lastPathDistance;
     static boolean showPoints = true;
     static boolean calculateAfterRandomize;
     static boolean isCalculating;
-
-    private static boolean isCalculated;
-    private static boolean isDraggedPointChanged;
-
     static Point draggedPoint = null;
     static ArrayList<Point> points = new ArrayList<>();
     static ArrayList<Segment> segments = new ArrayList<>();
+
+    private static boolean isCalculated;
+    private static boolean isDraggedPointChanged;
 
     /**
      * Ensures that the base and end points are set correctly
@@ -40,7 +39,6 @@ class Field {
     static void onDragEnd() {
         draggedPoint.showCoordinates = false;
         draggedPoint = null;
-
         if (isDraggedPointChanged) {
             calculate();
             isDraggedPointChanged = false;
@@ -50,28 +48,26 @@ class Field {
     static void onDrag(int x, int y) {
         // get point
         if (draggedPoint == null) {
-            for (Point p : points)
+            for (Point p : points) {
                 if (Util.isClickInBounds(x, y, p.x, p.y, p.width, p.height)) {
                     draggedPoint = p;
                     draggedPoint.showCoordinates = true;
                     break;
                 }
+            }
         }
         // else, already have a dragged point
-
         // move point to new mouse x and y
         if (draggedPoint != null) {
             // keep point within field boundaries
-            if (Util.isClickInBounds(x - Point.SIZE / 2 - 1, y - Point.SIZE / 2, 8, 8,
-                    fieldWidth - 11, Main.WINDOW_HEIGHT - 26)) {
+            if (Util.isClickInBounds(x - Point.SIZE / 2 - 1, y - Point.SIZE / 2, 8, 8, fieldWidth - 11, Main.WINDOW_HEIGHT - 26)) {
                 draggedPoint.x = x - Point.SIZE / 2;
                 draggedPoint.y = y - Point.SIZE / 2;
                 isDraggedPointChanged = true;
-
                 // update segment
-                if (segments.size() > 0)
-                    if (draggedPoint.parentSegment != null)
-                        draggedPoint.parentSegment = new Segment(draggedPoint, Segment.getOtherPoint(draggedPoint));
+                if (segments.size() > 0 && draggedPoint.parentSegment != null) {
+                    draggedPoint.parentSegment = new Segment(draggedPoint, Segment.getOtherPoint(draggedPoint));
+                }
             }
         }
         // else, something is wrong
@@ -85,16 +81,16 @@ class Field {
             if (x > 7 && x < fieldWidth - 2 && y > 8 && y < Main.WINDOW_HEIGHT - 20) {
                 // within field boundaries
                 boolean exists = false;
-                for (Point p : points)
+                for (Point p : points) {
                     exists = p.x == x && p.y == y;
+                }
                 // if there isn't already a point at the clicked x/y, then add it
-                if (!exists)
+                if (!exists) {
                     points.add(new Point(x, y));
-
+                }
                 updatePointBooleans();
             }
         }
-
         // check button enabled/disabled
         if (points.size() > 0) {
             if (!UI.getButtonIsEnabled(UI.RESET_BUTTON))
@@ -115,13 +111,11 @@ class Field {
         isCalculating = true;
         // reset lastPathDistance from any previous calculation
         lastPathDistance = 0;
-
         // disable calculate button while actually calculating
         UI.setButtonIsEnabled(UI.CALCULATE_BUTTON, false);
-
-        if (segments.size() > 0)
+        if (segments.size() > 0) {
             segments.clear();
-
+        }
         // get base point
         boolean setBase = false;
         for (Point p : points) {
@@ -133,25 +127,22 @@ class Field {
                 setBase = true;
             }
         }
-
         // iterate through all the other points, finding the shortest distance
         if (current != null) {
             // there is a base point, so continue
             short index = 0;
             double shortestDistance;
             Point base = null;
-
             while (index < points.size()) {
                 double distance = 0;
                 Point closest = null;
                 shortestDistance = Double.MAX_VALUE;
-
                 // find the closest point to current
                 for (Point p : points) {
                     if (p.isBasePoint)
                         base = p;
 
-                    if (p.equals(current) || p.isTravelled || p.isBasePoint || p.isEndPoint)
+                    if (p.equalCoordinates(current) || p.isTravelled || p.isBasePoint || p.isEndPoint)
                         continue;
 
                     double prev = shortestDistance;
@@ -189,13 +180,10 @@ class Field {
                 }
                 index++;
             }
-
             isCalculated = true;
             isCalculating = false;
-
             // hundredth place
-            lastPathDistance = Double.valueOf(String.format("%.2f", lastPathDistance));
-
+            lastPathDistance = Double.parseDouble(String.format("%.2f", lastPathDistance));
             // re-enable calculate button
             UI.setButtonIsEnabled(UI.CALCULATE_BUTTON, true);
         }
@@ -245,18 +233,20 @@ class Field {
     }
 
     static void render(Graphics graphics) {
-        // field border (#FinishTheWall)
+        // border (wall!)
         graphics.setColor(Color.BLACK);
         graphics.drawRect(8, 8, fieldWidth, Main.WINDOW_HEIGHT - 27);
-
         try {
-            if (isCalculated && !isCalculating)
-                for (Segment segment : segments)
+            if (isCalculated && !isCalculating) {
+                for (Segment segment : segments) {
                     segment.render(graphics);
-
-            if (showPoints)
-                for (Point point : points)
+                }
+            }
+            if (showPoints) {
+                for (Point point : points) {
                     point.render(graphics);
+                }
+            }
         } catch (Exception e) {
             // ignore, concurrent modification because of overlapping render and tick threads
         }
@@ -265,8 +255,9 @@ class Field {
     static void tick() {
         fieldWidth = Main.WINDOW_WIDTH - 264;
         try {
-            for (Point p : points)
+            for (Point p : points) {
                 p.tick();
+            }
         } catch (Exception e) {
             // ignore, concurrent modification because of overlapping render and tick threads
         }

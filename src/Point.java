@@ -28,15 +28,12 @@ class Point extends Entity {
      */
     Segment parentSegment;
 
-    /**
-     * Set randomly in constructor
-     */
     private Color color;
-    private Color borderColor = Color.BLACK;
-    private Color coordinateColor = new Color(0, 0, 0);
-    private Font coordinateFont = new Font("Consolas", Font.PLAIN, 12);
-    private FontMetrics coordinateFontMetrics;
     private String coordinateString;
+    private FontMetrics coordinateFontMetrics;
+    private final Color borderColor = Color.BLACK;
+    private final Color coordinateColor = Color.BLACK;
+    private final Font coordinateFont = new Font("Consolas", Font.PLAIN, 12);
 
     /**
      * Creates a new point with a random color at the specified coordinates
@@ -48,8 +45,7 @@ class Point extends Entity {
         super(SIZE, SIZE);
         this.x = x;
         this.y = y;
-        color = new Color(Util.randomInt(255, 0), Util.randomInt(255, 0),
-                Util.randomInt(255, 0));
+        color = new Color(Util.randomInt(255, 0), Util.randomInt(255, 0), Util.randomInt(255, 0));
         coordinateString = x + ", " + y;
     }
 
@@ -62,9 +58,9 @@ class Point extends Entity {
         graphics.setColor(borderColor);
         graphics.drawRect(x - 1, y - 1, width + 1, height + 1);
         // visual indication if this is either the base or end point
-        if (isBasePoint || isEndPoint)
+        if (isBasePoint || isEndPoint) {
             graphics.drawRect(x - 3, y - 3, width + 5, height + 5);
-
+        }
         // display coordinates on hover
         if (showCoordinates) {
             graphics.setColor(coordinateColor);
@@ -85,16 +81,13 @@ class Point extends Entity {
         showCoordinates = Util.isClickInBounds(Mouse.x, Mouse.y, x - 5, y - 5, width + 5, height + 5);
     }
 
-    /**
-     * @param other The other point to compare this point to
-     * @return Whether or not this point has the same x and y coordinates as the given point
-     */
-    boolean equals(Point other) {
+    boolean equalCoordinates(Point other) {
         return other != null && x == other.x && y == other.y;
     }
 
+    @Override
     public String toString() {
-        return "(x=" + x + ", y=" + y + ")";
+        return "(x: " + x + ", y: " + y + ")";
     }
 
 }

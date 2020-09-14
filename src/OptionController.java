@@ -6,11 +6,9 @@ class OptionController {
     static final byte CHECKBOX = 2;
     static final byte SLIDER = 3;
     static final byte COMBO_BOX = 4;
-
-    private static short width = 180;
-    private static short height = 64;
-
-    private byte componentID;
+    private final byte componentID;
+    private static final short width = 180;
+    private static final short height = 64;
 
     JLabel descriptionLabel;
     JButton button;
@@ -21,11 +19,9 @@ class OptionController {
     OptionController(String label, String componentLabel, byte componentID, int row, int column) {
         int x = column * width + 16 + (column * 24);
         int y = row * height + 16 + (row * 24);
-
         descriptionLabel = new JLabel(label);
         descriptionLabel.setSize(width, height / 2);
         descriptionLabel.setLocation(x, y);
-
         this.componentID = componentID;
         switch (componentID) {
             case BUTTON:
@@ -50,12 +46,10 @@ class OptionController {
     OptionController(String label, String[] listItems, int row, int column) {
         int x = column * width + 16 + (column * 24);
         int y = row * height + 16 + (row * 24);
-
         descriptionLabel = new JLabel(label);
         descriptionLabel.setSize(width, height / 2);
         descriptionLabel.setLocation(x, y);
         this.componentID = COMBO_BOX;
-
         comboBox = new JComboBox<>(listItems);
         comboBox.setFocusable(false);
         comboBox.setSize(128, 24);
@@ -66,12 +60,10 @@ class OptionController {
     OptionController(String label, int min, int max, int init, int row, int column, int tickSpacing) {
         int x = column * width + 16 + (column * 24);
         int y = row * height + 16 + (row * 24);
-
         descriptionLabel = new JLabel(label);
         descriptionLabel.setSize(width, height / 2);
         descriptionLabel.setLocation(x, y);
         this.componentID = SLIDER;
-
         slider = new JSlider(JSlider.HORIZONTAL, min, max, init);
         slider.addChangeListener(l -> onSliderUpdate(slider.getValue()));
         slider.setMajorTickSpacing(tickSpacing);
@@ -79,7 +71,7 @@ class OptionController {
         slider.setPaintTicks(true);
         slider.setPaintLabels(true);
         slider.setSnapToTicks(true);
-        slider.setSize(300, (int)(height * 1.75));
+        slider.setSize(300, (int) (height * 1.75));
         slider.setLocation(x, (int) (y + height / 2.75));
         slider.setFocusable(false);
     }
@@ -105,9 +97,11 @@ class OptionController {
         frame.add(descriptionLabel);
     }
 
-    void onUpdate() {}
-    void onComboBoxUpdate(String selected) {}
-    void onSliderUpdate(int value) {}
+    void onUpdate() { }
+
+    void onComboBoxUpdate(String selected) { }
+
+    void onSliderUpdate(int value) { }
 
     void synchronizeComboBoxSelection(String selection) {
         comboBox.setSelectedItem(selection);

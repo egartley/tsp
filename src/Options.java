@@ -7,10 +7,9 @@ class Options {
     private static boolean isAlreadyShown = false;
 
     static void show() {
-        if (isAlreadyShown)
-            return; // prevent multiple windows/frames
-
-        // build frame
+        if (isAlreadyShown) {
+            return;
+        }
         JFrame frame = new JFrame("Options");
         frame.setSize(800, 500);
         frame.setLocationRelativeTo(null);
@@ -23,59 +22,38 @@ class Options {
             public void windowOpened(WindowEvent e) {
                 isAlreadyShown = true;
             }
-
             @Override
             public void windowClosing(WindowEvent e) {
                 isAlreadyShown = false;
             }
-
             @Override
-            public void windowClosed(WindowEvent e) {
-
-            }
-
+            public void windowClosed(WindowEvent e) { }
             @Override
-            public void windowIconified(WindowEvent e) {
-
-            }
-
+            public void windowIconified(WindowEvent e) { }
             @Override
-            public void windowDeiconified(WindowEvent e) {
-
-            }
-
+            public void windowDeiconified(WindowEvent e) { }
             @Override
-            public void windowActivated(WindowEvent e) {
-
-            }
-
+            public void windowActivated(WindowEvent e) { }
             @Override
-            public void windowDeactivated(WindowEvent e) {
-
-            }
+            public void windowDeactivated(WindowEvent e) { }
         });
         frame.setAlwaysOnTop(true);
-
         // build controllers
-        OptionController randomizeAmountController = new OptionController("Points while randomizing",
-                new String[]{"Maximum", "3", "12", "18", "24", "32", "48", "52", "64", "72", "128", "200", "300", "500"}, 0, 0) {
+        String[] choices = new String[]{"Maximum", "3", "12", "18", "24", "32", "48", "52", "64", "72", "128", "200", "300", "500"};
+        OptionController randomizeAmountController = new OptionController("Points while randomizing", choices, 0, 0) {
             @Override
             void onComboBoxUpdate(String selected) {
                 if (selected.equals("Maximum")) {
                     Field.randomizeAmount = Field.maximumPoints;
                 } else {
-                    Field.randomizeAmount = Integer.valueOf(selected);
+                    Field.randomizeAmount = Integer.parseInt(selected);
                 }
             }
         };
         randomizeAmountController.addComponentsToFrame(frame);
-        if (Field.randomizeAmount == Field.maximumPoints)
-            randomizeAmountController.synchronizeComboBoxSelection("Maximum");
-        else
-            randomizeAmountController.synchronizeComboBoxSelection(String.valueOf(Field.randomizeAmount));
+        randomizeAmountController.synchronizeComboBoxSelection((Field.randomizeAmount == Field.maximumPoints) ? "Maximum" : String.valueOf(Field.randomizeAmount));
 
-        OptionController maximumPointsController = new OptionController("Maximum number of points (" + Field.maximumPoints + ")",
-                Field.MIN_POINTS, Field.MAX_POINTS, Field.maximumPoints, 1, 0, 250) {
+        OptionController maximumPointsController = new OptionController("Maximum number of points (" + Field.maximumPoints + ")", Field.MIN_POINTS, Field.MAX_POINTS, Field.maximumPoints, 1, 0, 250) {
             @Override
             void onSliderUpdate(int value) {
                 Field.maximumPoints = value;
@@ -101,7 +79,6 @@ class Options {
             calculateAfterRandomizeController.checkBox.setText("Yes");
             calculateAfterRandomizeController.checkBox.setSelected(true);
         }
-
         // additional components
         JButton okayButton = new JButton("OK");
         okayButton.setSize(96, 29);
@@ -111,7 +88,6 @@ class Options {
             frame.dispose();
             isAlreadyShown = false;
         });
-
         frame.add(okayButton);
         frame.setVisible(true);
     }

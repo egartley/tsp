@@ -1,7 +1,5 @@
 class HelpPane {
 
-    void show() {
-
-    }
+    void show() { }
 
 }

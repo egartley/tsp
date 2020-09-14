@@ -10,9 +10,7 @@ abstract class Entity {
     public int width;
     public int height;
 
-    public Entity() {
-
-    }
+    public Entity() { }
 
     public Entity(int width, int height) {
         this.width = width;

@@ -15,7 +15,7 @@ class Segment extends Entity {
     }
 
     static Point getOtherPoint(Point p) {
-        return p.parentSegment.point1.equals(p) ? p.parentSegment.point2 : p.parentSegment.point1;
+        return p.parentSegment.point1.equalCoordinates(p) ? p.parentSegment.point2 : p.parentSegment.point1;
     }
 
     @Override

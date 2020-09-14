@@ -22,12 +22,9 @@ class Util {
     /**
      * Returns a resized image of the original with the supplied width and height
      *
-     * @param image
-     *            The original image to resize (won't be changed)
-     * @param w
-     *            New width to resize to
-     * @param h
-     *            New height to resize to
+     * @param image The original image to resize (won't be changed)
+     * @param w     New width to resize to
+     * @param h     New height to resize to
      * @return A resized version of the given buffered image
      */
     static BufferedImage resized(BufferedImage image, int w, int h) {
@@ -38,10 +35,8 @@ class Util {
      * Returns a random integer, using {@link java.util.concurrent.ThreadLocalRandom
      * ThreadLocalRandom}, between the supplied maximum and minimum values
      *
-     * @param maximum
-     *            The maximum value the random integer could be
-     * @param minimum
-     *            The minimum value the random integer could be
+     * @param maximum The maximum value the random integer could be
+     * @param minimum The minimum value the random integer could be
      * @return A random integer between the given maximum and minimum
      */
     static int randomInt(int maximum, int minimum) {
@@ -60,12 +55,9 @@ class Util {
      * 1)} will be used
      * </p>
      *
-     * @param maximum
-     *            The maximum value the random integer could be
-     * @param minimum
-     *            The minimum value the random integer could be
-     * @param inclusive
-     *            Whether or not the include the maximum as a possible value
+     * @param maximum   The maximum value the random integer could be
+     * @param minimum   The minimum value the random integer could be
+     * @param inclusive Whether or not the include the maximum as a possible value
      * @return A random integer between the given maximum and minimum
      */
     static int randomInt(int maximum, int minimum, boolean inclusive) {

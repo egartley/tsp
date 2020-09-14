@@ -8,9 +8,7 @@ class Mouse implements MouseListener, MouseMotionListener {
     static int y;
 
     @Override
-    public void mouseClicked(MouseEvent e) {
-
-    }
+    public void mouseClicked(MouseEvent e) { }
 
     @Override
     public void mouseDragged(MouseEvent e) {
@@ -18,14 +16,10 @@ class Mouse implements MouseListener, MouseMotionListener {
     }
 
     @Override
-    public void mouseEntered(MouseEvent e) {
-
-    }
+    public void mouseEntered(MouseEvent e) { }
 
     @Override
-    public void mouseExited(MouseEvent e) {
-
-    }
+    public void mouseExited(MouseEvent e) { }
 
     @Override
     public void mouseMoved(MouseEvent e) {
@@ -34,19 +28,19 @@ class Mouse implements MouseListener, MouseMotionListener {
     }
 
     @Override
-    public void mousePressed(MouseEvent e) {
-
-    }
+    public void mousePressed(MouseEvent e) { }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (Field.draggedPoint == null)
+        if (Field.draggedPoint == null) {
             Field.onClick(e.getX(), e.getY());
-        else
+        } else {
             Field.onDragEnd();
+        }
 
-        for (ActionButton ab : UI.buttons)
+        for (ActionButton ab : UI.buttons) {
             ab.checkClick(e);
+        }
     }
 
 }

@@ -3,15 +3,11 @@ import java.awt.event.MouseEvent;
 
 class ActionButton {
 
-    /**
-     * Whether or not this button is able to be clicked
-     */
     boolean isEnabled;
 
-    private static byte declarationIndex = 0;
+    static Color enabledColor = new Color(0, 145, 17);
+    static Font font = new Font("Arial", Font.PLAIN, 18);
 
-    private short width = 180;
-    private short height = 32;
     private int x;
     private int y;
     private int baseX = 218;
@@ -21,18 +17,17 @@ class ActionButton {
     private int baseStringY = 23;
     private int stringX;
     private int stringY;
-    private int stringWidth;
+    private final short width = 180;
+    private final short height = 32;
+    private static byte declarationIndex = 0;
 
     private String text;
-    private Color disabledColor = Color.DARK_GRAY;
-    private Color enabledAccentColor = enabledColor.darker();
-    private Color disabledAccentColor = disabledColor.darker();
-    private Color hoverColor = enabledColor.brighter();
-    private Color textColor = Color.WHITE;
+    private final Color disabledColor = Color.DARK_GRAY;
+    private final Color enabledAccentColor = enabledColor.darker();
+    private final Color disabledAccentColor = disabledColor.darker();
+    private final Color hoverColor = enabledColor.brighter();
+    private final Color textColor = Color.WHITE;
     private Color currentColor = new Color(0, 170, 17);
-
-    static Color enabledColor = new Color(0, 145, 17);
-    static Font font = new Font("Arial", Font.PLAIN, 18);
 
     ActionButton(String text, boolean isEnabledByDefault, FontMetrics fm) {
         this(text, isEnabledByDefault, fm, 0);
@@ -41,25 +36,19 @@ class ActionButton {
     ActionButton(String text, boolean isEnabledByDefault, FontMetrics fm, int offset) {
         this.text = text;
         isEnabled = isEnabledByDefault;
-
         // auto-calculate initial coordinates based on order of declaration
         baseY = (declarationIndex += (offset + 1)) * baseYMultiplier;
-        stringWidth = fm.stringWidth(text);
+        int stringWidth = fm.stringWidth(text);
         baseStringX = (width / 2) - (stringWidth / 2);
         tick();
     }
 
-    /**
-     * Should be called whenever the user clicks/releases the mouse
-     */
     void checkClick(MouseEvent e) {
-        if (isClickInBounds(e.getX(), e.getY()) && isEnabled)
+        if (isClickInBounds(e.getX(), e.getY()) && isEnabled) {
             onClick();
+        }
     }
 
-    /**
-     * Called when the button is clicked and enabled
-     */
     void onClick() {
 
     }
@@ -79,7 +68,6 @@ class ActionButton {
             graphics.setColor(disabledColor);
         }
         graphics.fillRect(x, y, width, height);
-
         // text
         graphics.setFont(font);
         graphics.setColor(textColor);
