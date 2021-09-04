@@ -9,7 +9,7 @@ Application of the [travelling salesman problem](https://en.wikipedia.org/wiki/T
 
 >Given a collection of Cartesian points, starting at the specified "origin" point, iterate through all the possible paths between all of the other points, finding the shortest of those paths, and continue from the corresponding point of the shortest path until the "destination" point is reached.
 
-Here is its actual implementation: [Field.java#L113](https://github.com/egartley/tsp/blob/master/src/Field.java#L113)
+Here is its actual implementation: [Field.java#L109](https://github.com/egartley/tsp/blob/master/src/Field.java#L109)
 
 [IntelliJ IDEA](https://www.jetbrains.com/idea/) is used for this project
 
